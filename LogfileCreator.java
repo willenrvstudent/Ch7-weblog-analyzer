@@ -38,7 +38,7 @@ public class LogfileCreator
                 Arrays.sort(entries);
                 for(int i = 0; i < numEntries; i++) {
                     writer.write(entries[i].toString());
-                    writer.write('\n');
+                    writer.write("\n");
                 }
                 
                 success = true;
