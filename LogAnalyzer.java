@@ -11,8 +11,10 @@ public class LogAnalyzer
 {
     // Where to calculate the hourly access counts.
     private int[] hourCounts;
+    private int[] dayCounts;
     // Use a LogfileReader to access the data.
-    private LogfileReader reader;
+    private LogfileReader readerH;
+    private LogfileReader readerD;
 
     /**
      * Create an object to analyze hourly web accesses.
@@ -22,8 +24,10 @@ public class LogAnalyzer
         // Create the array object to hold the hourly
         // access counts.
         hourCounts = new int[24];
+         dayCounts = new int[29];
         // Create the reader to obtain the data.
-        reader = new LogfileReader();
+        readerH = new LogfileReader();
+        readerD = new LogfileReader();
     }
     
     /**
@@ -34,7 +38,9 @@ public class LogAnalyzer
     public LogAnalyzer(String filename)
     {
         hourCounts = new int[24];
-        reader = new LogfileReader(filename);
+        dayCounts = new int[29];
+        readerH = new LogfileReader(filename);
+        readerD = new LogfileReader(filename);
     }
 
     /**
@@ -42,13 +48,83 @@ public class LogAnalyzer
      */
     public void analyzeHourlyData()
     {
-        while(reader.hasNext()) {
-            LogEntry entry = reader.next();
+        while(readerH.hasNext()) {
+            LogEntry entry = readerH.next();
             int hour = entry.getHour();
             hourCounts[hour]++;
         }
     }
-
+    
+    /**
+     * Analyze the daily acess data from log file.
+     */
+    public void analyzeDailyData()
+    {
+       while(readerD.hasNext())
+       {
+           LogEntry entry = readerD.next();
+           int day = entry.getDay();
+           dayCounts[day]++;
+       }
+    
+    }
+    
+    /**
+     * print the daily counts
+     */
+    public void printDailyCounts()
+    {
+        System.out.println("Day: Count");
+        for(int day = 1; day < dayCounts.length; day++) {
+            System.out.println(day + ": " + dayCounts[day]);
+        }
+    }
+    
+    /**
+     * Return the quietest day in log file
+     * @return minIndex
+     */
+    public int quietsDay()
+    {
+        analyzeDailyData();
+        int min = 100;
+        int minIndex = 0;
+    
+        for(int day = 1; day < dayCounts.length; day++)
+        {
+            if(dayCounts[day] < min)
+            {
+                min = dayCounts[day];
+                minIndex = day;
+            }
+        
+        }    
+    
+        return minIndex;
+    }
+    
+    /**
+     * return the busiest day on log file.
+     * @return maxIndex
+     */
+    public int busiestDay()
+    {
+        analyzeDailyData();
+        int max = 0;
+        int maxIndex = 0;
+        
+        for(int day= 1; day < dayCounts.length; day++)
+        {
+            if(dayCounts[day] > max)
+            {
+                max = dayCounts[day];
+                maxIndex = day;
+            }
+        
+        }
+        
+        return maxIndex;
+    }
     /**
      * Print the hourly counts.
      * These should have been set with a prior
@@ -102,6 +178,7 @@ public class LogAnalyzer
     
     /**
      * Returns the quietest hour in a day.
+     * @return minIndex
      */
     public int quietstHour()
     {
@@ -124,6 +201,7 @@ public class LogAnalyzer
     
     /**
      * Returns the busiest two hours. 
+     * @return maxIndex
      */
     public int busiestTwoHours()
     {
@@ -148,6 +226,6 @@ public class LogAnalyzer
      */
     public void printData()
     {
-        reader.printData();
+        readerD.printData();
     }
 }
